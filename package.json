@@ -1,7 +1,7 @@
 {
-  "name": "boilerplate",
+  "name": "node-boilerplate",
   "version": "1.0.0",
-  "description": "This is a simple NodeJS boilerplate project.",
+  "description": "This is a simple NodeJS boilerplate project with express and typescript.",
   "main": "app.js",
   "scripts": {
     "start": "npm run serve",
