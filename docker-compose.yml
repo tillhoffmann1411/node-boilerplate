@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  node:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    working_dir: /usr/src/app
+    ports:
+      - 3000:3000
+    env_file:
+      .env
+    restart: on-failure
+
+volumes:
+  node_modules:
