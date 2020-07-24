@@ -21,6 +21,10 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "@typescript-eslint/indent": [
+            "error",
+            2
+        ],
         "@typescript-eslint/quotes": [
             "warn",
             "single"

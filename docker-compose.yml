@@ -4,13 +4,40 @@ services:
   node:
     build: .
     volumes:
-      - .:/usr/src/app
-    working_dir: /usr/src/app
+      - .:/app
+      - ./node_modules:/app/node_modules
+    working_dir: /app
+    container_name: node
     ports:
       - 3000:3000
-    env_file:
-      .env
+    env_file: .env
+    networks:
+      - app-network
+    environment:
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
+      - MONGO_HOSTNAME=db
+      - MONGO_PORT=$MONGO_PORT
+      - MONGO_DB=$MONGO_DB 
+    restart: on-failure
+    # command: ./scripts/wait-for.sh db:27017 -- ./app/node_modules/.bin/nodemon
+
+  db:
+    image: mongo:4.1.8-xenial
+    container_name: db
+    env_file: .env
+    networks:
+      - app-network
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+    volumes:  
+      - ./dbdata:/data/db 
     restart: on-failure
 
+networks:
+  app-network:
+    driver: bridge
+
 volumes:
-  node_modules:
+  dbdata:
