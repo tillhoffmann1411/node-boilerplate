@@ -20,11 +20,14 @@ export class UserController {
    * @param req Request param
    * @param res Response param
    */
-  public static create(req: Request, res: Response): void {
+  public static async create(req: Request, res: Response): Promise<void> {
     console.log('Request POST /users');
-    console.log(req.body);
-    // TODO
-    res.send(req.body.name);
+    const user = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+    });
+    res.send(user);
   }
 
   /**
@@ -42,8 +45,10 @@ export class UserController {
    * @param req Request param
    * @param res Response param
    */
-  public static delete(req: Request, res: Response): void {
+  public static async delete(req: Request, res: Response): Promise<void> {
     console.log('Request delete /users');
+    const result = await User.remove({'name': 'Till'});
+    res.send(result);
     // TODO
   }
 
@@ -63,7 +68,20 @@ export class UserController {
    * @param res Response param
    */
   public static signin(req: Request, res: Response): void {
-    // TODO
+    console.log('Request POST /users/signnin');
+    User.findOne({ email: req.body.email }, (err, user) => {
+      if (err) {
+        throw err;
+      }
+  
+      // test a matching password
+      user.comparePasswords(req.body.password, (err, isMatch) => {
+        if (err) {
+          throw err;
+        }
+        res.send(isMatch);
+      });
+    });
   }
   
   /**
