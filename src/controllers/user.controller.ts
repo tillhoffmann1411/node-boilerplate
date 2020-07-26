@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user.model';
+import { UserService } from '../services/user.service';
+import { typeOfUser } from '../interfaces/user.interface';
 
 
 export class UserController {
@@ -20,14 +22,23 @@ export class UserController {
    * @param req Request param
    * @param res Response param
    */
-  public static async create(req: Request, res: Response): Promise<void> {
-    console.log('Request POST /users');
-    const user = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-    });
-    res.send(user);
+  public static async signup(req: Request, res: Response): Promise<void> {
+    if (req.body.name && req.body.email && req.body.password) {
+      try {
+        const userAndToken = await UserService.signup({
+          name: req.body.name,
+          email: req.body.email,
+          password:req.body.password,
+        });
+        res.send(userAndToken);
+      } catch (err) {
+        console.error('Error by creating User:', err);
+        res.status(500).send('Error by creating User');
+      }
+    } else {
+      console.log('Incorrect request body:', req.body);
+      res.status(400).send('Body was incorrect');
+    }
   }
 
   /**
@@ -35,9 +46,24 @@ export class UserController {
    * @param req Request param
    * @param res Response param
    */
-  public static update(req: Request, res: Response): void {
-    console.log('Request patch /users');
-    // TODO
+  public static async update(req: Request, res: Response): Promise<void> {
+    const user = {
+      _id: req.body._id,
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password
+    };
+    if (typeOfUser(user)) {
+      try {
+        const result = await UserService.update(user);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send('Error by updating User');
+      }
+    } else {
+      console.log('Incorrect request body:', req.body);
+      res.status(400).send('Body was incorrect');
+    }
   }
 
   /**
@@ -46,10 +72,18 @@ export class UserController {
    * @param res Response param
    */
   public static async delete(req: Request, res: Response): Promise<void> {
-    console.log('Request delete /users');
-    const result = await User.remove({'name': 'Till'});
-    res.send(result);
-    // TODO
+    const id = req.body._id;
+    if (id) {
+      try {
+        const result = await UserService.delete(id);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send('Error by deleting User');
+      }
+    } else {
+      console.log('Incorrect request body:', req.body);
+      res.status(400).send('Body was incorrect');
+    }
   }
 
   /**
@@ -57,9 +91,20 @@ export class UserController {
    * @param req Request param
    * @param res Response param
    */
-  public static get(req: Request, res: Response): void {
-    console.log('Request get /users/id');
-    // TODO
+  public static async get(req: Request, res: Response): Promise<void> {
+    const id = req.body.id;
+    if (id) {
+      try {
+        const result = await UserService.getById(id);
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Error by getting User');
+      }
+    } else {
+      console.log('Incorrect request body:', req.body);
+      res.status(400).send('Body was incorrect');
+    }
   }
 
   /**
@@ -67,29 +112,23 @@ export class UserController {
    * @param req Request param
    * @param res Response param
    */
-  public static signin(req: Request, res: Response): void {
-    console.log('Request POST /users/signnin');
-    User.findOne({ email: req.body.email }, (err, user) => {
-      if (err) {
-        throw err;
-      }
-  
-      // test a matching password
-      user.comparePasswords(req.body.password, (err, isMatch) => {
-        if (err) {
-          throw err;
+  public static async signin(req: Request, res: Response): Promise<void> {
+    const email = req.body.email;
+    const password = req.body.password;
+
+    if (email && password) {
+      try {
+        const result = await UserService.signin(email, password);
+        if (result.token && result.expiryDate) {
+          res.send(result);
         }
-        res.send(isMatch);
-      });
-    });
-  }
-  
-  /**
-   * Signs an User up
-   * @param req Request param
-   * @param res Response param
-   */
-  public static signup(req: Request, res: Response): void {
-    // TODO
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Error by getting User');
+      }
+    } else {
+      console.log('Incorrect request body:', req.body);
+      res.status(400).send('Body was incorrect');
+    }
   }
 }
