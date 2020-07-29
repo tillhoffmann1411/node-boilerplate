@@ -54,11 +54,11 @@ userSchema.methods.isPasswordValid = function(password: string): Promise<boolean
 };
 
 // Omit the password when returning a user
-// userSchema.set('toJSON', {
-//   transform: (doc, ret) => {
-//     delete ret.password;
-//     return ret;
-//   }
-// });
+userSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.password;
+    return ret;
+  }
+});
 
 export default mongoose.model<IUserDoc>('User', userSchema);
