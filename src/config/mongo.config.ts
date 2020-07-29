@@ -16,14 +16,11 @@ export default class Mongo {
     console.log('Try to connect to database - ', db);
     const options = {
       useNewUrlParser: true,
-      reconnectTries: Number.MAX_VALUE,
-      reconnectInterval: 500, 
-      connectTimeoutMS: 10000,
       useUnifiedTopology: true,
     };
     
     mongoose.connect(db, options).then(() => {
-      console.log(`Successfully connected to ${db}`);
+      console.log('Successfully connected to MongoDB');
     }).catch(error => {
       console.log('Error connecting to database: ', error);
     });

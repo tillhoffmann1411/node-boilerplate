@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IUser {
+  _id?: string,
   name: string,
   email: string,
-  password: string,
+  password?: string,
 }
 
 export function typeOfUser(obj: any): boolean {

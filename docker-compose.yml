@@ -20,7 +20,8 @@ services:
       - MONGO_PORT=$MONGO_PORT
       - MONGO_DB=$MONGO_DB 
     restart: on-failure
-    depends_on: db
+    depends_on:
+      - db
     # command: ./scripts/wait-for.sh db:27017 -- ./app/node_modules/.bin/nodemon
 
   db:

@@ -1,16 +1,21 @@
 import { IUser } from '../interfaces/user.interface';
 import User, { IUserDoc } from '../models/user.model';
+import { TokenService } from './token.service';
+import { JwtClaimSet, JwtTokenObject } from '../interfaces/jwt-token';
 
 export class UserService {
-  public static async signup(user: {name: string, email: string, password: string}): Promise<{user: IUser, token: string, expiryDate: number}> {
-    const createdUser = await User.create({
-      name: user.name,
-      email: user.email,
-      password: user.password,
-    });
-    const token = await createdUser.generateAuthToken();
-    const expiryDate = createdUser.generateExpiryDate(1);
-    return {user: createdUser, token, expiryDate};
+  public static async signup(user: {name: string, email: string, password: string}): Promise<{user: IUser, tokenObject: JwtTokenObject}> {
+    try {
+      const createdUser = await User.create({
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      });
+      const tokenObject = await UserService.signin(user.email, user.password);
+      return {user: createdUser, tokenObject};
+    } catch (error) {
+      throw new Error('Error by creating User:' + error.toString());
+    }
   }
 
   public static async getById(id: string): Promise<IUserDoc> {
@@ -41,24 +46,25 @@ export class UserService {
     }
   }
 
-  public static async signin(email: string, password: string): Promise<{ 'token': string, 'expiryDate': number}> {
+  public static async signin(email: string, password: string): Promise<JwtTokenObject> {
     try {
       const user = await UserService.get({ email: email });
       if (!user) {
-        throw Error('No User found with that email: ' + email);
+        throw new Error('No User found with that email: ' + email);
       }
-      const expiryDate = user.generateExpiryDate(1);
-      const token = await user.generateAuthToken();
-      if (!token) {
-        throw new Error('Could not generate Token');
-      }
-      if (await user.comparePasswords(password)) {
-        return { 'token': token, 'expiryDate': expiryDate};
+      const isValid = await user.isPasswordValid(password);
+      if (isValid) {
+        const claimSet: JwtClaimSet = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+        }
+        return TokenService.create(claimSet);
       } else {
-        throw Error('Wrong password');
+        throw new Error('Wrong password');
       }
     } catch (error) {
-      throw Error(error);
+      throw new Error(error);
     }
 
   }
