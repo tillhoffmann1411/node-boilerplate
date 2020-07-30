@@ -6,8 +6,6 @@ import cookieParser from 'cookie-parser';
 import { Route } from './interfaces/route.interface';
 import Mongo from './config/mongo.config';
 import { Passport } from './config/passport.config';
-import passport from 'passport';
-
 
 
 const PORT = process.env.PORT || 3000;

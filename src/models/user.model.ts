@@ -53,10 +53,12 @@ userSchema.methods.isPasswordValid = function(password: string): Promise<boolean
   return bcrypt.compare(password, this.password);
 };
 
-// Omit the password when returning a user
+// Omit the password when returning a user and change _id to id
 userSchema.set('toJSON', {
   transform: (doc, ret) => {
     delete ret.password;
+    ret.id = ret._id;
+    delete ret._id;
     return ret;
   }
 });

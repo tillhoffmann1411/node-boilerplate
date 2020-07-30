@@ -36,10 +36,10 @@ export class UserService {
     }
   }
 
-  public static async delete(id: string): Promise<{ok?: number, n?: number, deletedCount?: number}> {
+  public static async delete(id: string): Promise<number> {
     try {
       const response = await User.deleteOne({}); // TODO remove this!!! Deletes all
-      return response;
+      return response.deletedCount;
       
     } catch (error) {
       throw Error('Unexpected error during deleting User');

@@ -8,7 +8,7 @@ export class TokenService {
   public static create(claimSet: JwtClaimSet): JwtTokenObject {
     const token = jwt.sign(claimSet, process.env.JWT_KEY, {expiresIn: JWT_CONFIG.expiresIn});
     return {
-      token: 'Bearer ' + token,
+      token: token,
       expiresIn: JWT_CONFIG.expiresIn
     };
   }
