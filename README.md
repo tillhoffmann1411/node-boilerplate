@@ -28,3 +28,7 @@ A boilerplate template for NodeJS projects.
 | **models**      | Mongoose models are here defined                                                                   |
 | **routes**      | Define your different routes here.                                                                 |
 | **services**    | Main logic divided according to the data they use. This is where database accesses take place.     |
+
+
+
+Feel free to use [commit emojis](https://gitmoji.carloscuesta.me/) for some color and easy to understand commit messages.
