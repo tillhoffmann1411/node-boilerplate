@@ -2,7 +2,7 @@
 A boilerplate template for NodeJS projects.
 
 ## Setup
-1. Create a .env file in the root directory with following settings:
+1. Create a **.env** file in the root directory with following settings:
 ```
   PORT=3000
 
