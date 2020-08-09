@@ -54,7 +54,6 @@ export class UserController {
         res.status(200).send({
           'success': true,
           'user': userAndTokenObject.user,
-          'token': userAndTokenObject.tokenObject.token,
           'expiresIn': userAndTokenObject.tokenObject.expiresIn
         });
       } catch (err) {
@@ -79,7 +78,7 @@ export class UserController {
       try {
         const tokenObject = await UserService.signin(email, password);
         res.cookie('jwt-token', tokenObject.token, {httpOnly: true, signed: true}); // TODO add in options 'secure: true' - missing for testing with postman
-        res.status(200).send({'success': true, 'token': tokenObject.token, 'expiresIn': tokenObject.expiresIn});
+        res.status(200).send({'success': true, 'expiresIn': tokenObject.expiresIn});
       } catch (error) {
         console.error(error);
         res.status(401).send({'success':  false, 'msg': error});

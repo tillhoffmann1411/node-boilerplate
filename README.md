@@ -15,3 +15,4 @@ A boilerplate template for NodeJS projects.
   COOKIE_SECRET=  
 ```
 2. With `docker-compose up` you can start the server.
+3. Test your running backend [Postman API documentation](https://documenter.getpostman.com/view/12313948/T1LJkUHc)
