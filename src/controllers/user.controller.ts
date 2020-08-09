@@ -28,7 +28,7 @@ export class UserController {
         const result = await UserService.getById(id);
         res.send(result);
       } catch (error) {
-        console.error(error);
+        console.error('\x1b[31m', error);
         res.status(500).send('Error by getting User');
       }
     } else {
@@ -57,7 +57,7 @@ export class UserController {
           'expiresIn': userAndTokenObject.tokenObject.expiresIn
         });
       } catch (err) {
-        console.error(err);
+        console.error('\x1b[31m', err);
         res.status(500).send({'success': false, 'msg': 'Error by sign you up'});
       }
     } else {
@@ -80,7 +80,7 @@ export class UserController {
         res.cookie('jwt-token', tokenObject.token, {httpOnly: true, signed: true}); // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({'success': true, 'expiresIn': tokenObject.expiresIn});
       } catch (error) {
-        console.error(error);
+        console.error('\x1b[31m', error);
         res.status(401).send({'success':  false, 'msg': error});
       }
     } else {
