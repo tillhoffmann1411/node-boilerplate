@@ -50,7 +50,7 @@ export class UserController {
           email: req.body.email,
           password:req.body.password,
         });
-        res.cookie('jwt-token', userAndTokenObject.tokenObject.token, {httpOnly: true, secure: true, signed: true});
+        res.cookie('jwt-token', userAndTokenObject.tokenObject.token, {httpOnly: true, signed: true}); // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({
           'success': true,
           'user': userAndTokenObject.user,
@@ -78,7 +78,7 @@ export class UserController {
     if (email && password) {
       try {
         const tokenObject = await UserService.signin(email, password);
-        res.cookie('jwt-token', tokenObject.token, {httpOnly: true, signed: true});
+        res.cookie('jwt-token', tokenObject.token, {httpOnly: true, signed: true}); // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({'success': true, 'token': tokenObject.token, 'expiresIn': tokenObject.expiresIn});
       } catch (error) {
         console.error(error);
