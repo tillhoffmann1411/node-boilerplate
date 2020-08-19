@@ -8,7 +8,7 @@ import Mongo from './config/mongo.config';
 import { Passport } from './config/passport.config';
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 class App {
   public app: express.Express
@@ -24,16 +24,16 @@ class App {
    */
   public start(): express.Express {
     Mongo.connect();
-    this.app.listen(PORT, () => {
-      console.log('\x1b[32m', `Server is running in http://localhost:${PORT}`)
+    this.app.listen(3000, () => {
+      console.info('\x1b[32m', `Server is running in http://localhost:${PORT}`)
     });
     return this.app;
   }
 
   private _initRoutes(routes: Route[]): void {
-    console.log('Create Routes:');
+    console.info('Create Routes:');
     routes.forEach(route => {
-      console.log(route.path);
+      console.info('\x1b[36m', route.path);
       this.app.use(route.router);
     });
   }
@@ -49,7 +49,7 @@ class App {
       optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
     }));
     this.app.use((req, res, next) => {
-      console.log(`${req.method} request to: ${req.originalUrl}`);
+      console.info('\x1b[32m', req.method, '\x1b[37m', `request to: ${req.originalUrl}`);
       return next();
     });
   }

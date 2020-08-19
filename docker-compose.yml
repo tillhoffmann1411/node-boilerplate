@@ -14,16 +14,16 @@ services:
     environment:
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
-      - MONGO_HOSTNAME=db
+      - MONGO_HOSTNAME=mongo
       - MONGO_PORT=$MONGO_PORT
       - MONGO_DB=$MONGO_DB 
     restart: on-failure
     depends_on:
-      - db
+      - mongo
 
-  db:
-    image: mongo:4.1.8-xenial
-    container_name: db
+  mongo:
+    image: mongo
+    container_name: mongodb
     env_file: .env
     networks:
       - app-network
@@ -35,19 +35,15 @@ services:
   nginx:
     image: nginx:mainline-alpine
     container_name: nginx
+    env_file: .env
     ports:
-      - 80:80
+      - $PORT:80
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - node
     networks:
       - app-network
-
-volumes:
-  certbot-etc:
-  certbot-var:
-  web-root:
 
 networks:
   app-network:

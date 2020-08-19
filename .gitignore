@@ -1,6 +1,6 @@
 node_modules
 .env
 package-lock.json
-dbdata
+data
 dist
 cert

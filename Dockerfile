@@ -1,6 +1,7 @@
 FROM node
 
 ADD ./scripts/node_startup.sh /
+
 RUN ["chmod", "+x", "./node_startup.sh"]
 
 EXPOSE 3000
