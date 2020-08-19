@@ -32,7 +32,7 @@ export class UserController {
         res.status(500).send('Error by getting User');
       }
     } else {
-      console.log('Incorrect request body:', req.body);
+      console.error('\x1b[31m', 'Incorrect request body:', req.body);
       res.status(400).send('Body was incorrect');
     }
   }
@@ -45,24 +45,26 @@ export class UserController {
   public static async signup(req: Request, res: Response): Promise<void> {
     if (req.body.name && req.body.email && req.body.password) {
       try {
-        const userAndTokenObject = await UserService.signup({
+        const userAndTokensObject = await UserService.signup({
           name: req.body.name,
           email: req.body.email,
           password:req.body.password,
-        });
-        res.cookie('jwt-token', userAndTokenObject.tokenObject.token, {httpOnly: true, signed: true}); // TODO add in options 'secure: true' - missing for testing with postman
+        }, req.ip);
+        res.cookie('jwt', userAndTokensObject.jwt.token, {httpOnly: true, signed: true});               // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({
-          'success': true,
-          'user': userAndTokenObject.user,
-          'expiresIn': userAndTokenObject.tokenObject.expiresIn
+          success: true,
+          user: userAndTokensObject.user,
+          expiresIn: userAndTokensObject.jwt.expires,
+          refreshToken: userAndTokensObject.refreshToken.token,
+          refreshTokenexpiresIn: userAndTokensObject.refreshToken.expires,
         });
       } catch (err) {
         console.error('\x1b[31m', err);
-        res.status(500).send({'success': false, 'msg': 'Error by sign you up'});
+        res.status(500).send({success: false, msg: 'Error by sign you up'});
       }
     } else {
-      console.log('Incorrect request body:', req.body);
-      res.status(400).send({'success': false, 'msg': 'Body was incorrect'});
+      console.error('\x1b[31m', 'Incorrect request body:', req.body);
+      res.status(400).send({success: false, msg: 'Body was incorrect'});
     }
   }
 
@@ -76,16 +78,21 @@ export class UserController {
     const password = req.body.password;
     if (email && password) {
       try {
-        const tokenObject = await UserService.signin(email, password);
-        res.cookie('jwt-token', tokenObject.token, {httpOnly: true, signed: true}); // TODO add in options 'secure: true' - missing for testing with postman
-        res.status(200).send({'success': true, 'expiresIn': tokenObject.expiresIn});
+        const tokens = await UserService.signin(email, password, req.ip);
+        res.cookie('jwt', tokens.jwt.token, {httpOnly: true, signed: true});              // TODO add in options 'secure: true' - missing for testing with postman
+        res.status(200).send({
+          success: true,
+          expires: tokens.jwt.expires,
+          refreshToken: tokens.refreshToken.token,
+          refreshTokenexpires: tokens.refreshToken.expires,
+        });
       } catch (error) {
         console.error('\x1b[31m', error);
-        res.status(401).send({'success':  false, 'msg': error});
+        res.status(401).send({success:  false, msg: error});
       }
     } else {
-      console.log('Incorrect request body:', req.body);
-      res.status(400).send({'success': false, 'msg': 'Body was incorrect'});
+      console.error('\x1b[31m', 'Incorrect request body:', req.body);
+      res.status(400).send({success: false, msg: 'Body was incorrect'});
     }
   }
 
@@ -95,7 +102,7 @@ export class UserController {
    * @param res Response param - it returns true, when successfully loged out
    */
   public static signout(req: Request, res: Response): void {
-    res.status(200).clearCookie('jwt-token').send({'success': true});
+    res.status(200).clearCookie('jwt').send({success: true});
   }
 
   /**
@@ -115,10 +122,11 @@ export class UserController {
         const result = await UserService.update(user);
         res.status(200).send(result);
       } catch (error) {
+        console.error('\x1b[31m', 'Error by updating User:', error)
         res.status(500).send('Error by updating User');
       }
     } else {
-      console.log('Incorrect request body:', req.body);
+      console.error('\x1b[31m', 'Incorrect request body:', req.body);
       res.status(400).send('Body was incorrect');
     }
   }
@@ -134,16 +142,17 @@ export class UserController {
       try {
         const deletedCount = await UserService.delete(id);
         if (deletedCount === 1) {
-          res.clearCookie('jwt-token').send({'success': true});
+          res.clearCookie('jwt').send({success: true});
         } else {
-          throw Error();
+          throw Error('No user deleted. Please check if the user id is correct.');
         }
       } catch (error) {
-        res.status(500).send({'success': false, 'msg': 'Error by deleting User'});
+        console.error('\x1b[31m', 'Error by deleting User:', error);
+        res.status(500).send({success: false, msg: error});
       }
     } else {
-      console.log('Incorrect request body:', req.body);
-      res.status(400).send({ 'success': false, 'msg': 'Body was incorrect'});
+      console.error('\x1b[31m', 'Incorrect request body:', req.body);
+      res.status(400).send({ success: false, msg: 'Body was incorrect'});
     }
   }
 }

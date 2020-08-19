@@ -18,7 +18,7 @@ export class Passport {
 
   private static _cookieExtractor(req) {
     if (req && req.signedCookies) {
-      return req.signedCookies['jwt-token'];
+      return req.signedCookies['jwt'];
     } else {
       return null;
     }

@@ -13,16 +13,16 @@ const db = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MO
 
 export default class Mongo {
   public static connect(): void {
-    console.log('Try to connect to database - ', db);
+    console.log('Try to connect to database...');
     const options = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     };
     
     mongoose.connect(db, options).then(() => {
-      console.log('Successfully connected to MongoDB');
+      console.info('Successfully connected to MongoDB');
     }).catch(error => {
-      console.log('Error connecting to database: ', error);
+      console.info('Error connecting to database: ', error);
     });
     mongoose.connection.on('disconnected', this.connect);
   }

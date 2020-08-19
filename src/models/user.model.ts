@@ -1,20 +1,27 @@
-
 import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { IUser } from '../interfaces/user.interface';
+import { IRefreshToken } from '../interfaces/jwt';
 
-// TODO Refactore this to true salt
-const COST = 10;
 
-export interface IUserDoc extends Document, IUser {
+const RefreshTokenSchema = new Schema({
+  token: { type: String, required: true },
+  createdByIp: { type: String, required: true },
+  expires: { type: Number, required: true },
+  created: { type: Number, required: true },
+});
+
+
+export interface IUserSchema extends Document, IUser {
   _id: string;
+  refreshToken: IRefreshToken;
   comparePasswords: (password: string) => Promise<boolean>;
   generateHash: (password: string) => Promise<string>;
   isPasswordValid: (password: string) => Promise<boolean>;
 }
 
-const userSchema = new Schema({
+const UserSchema = new Schema({
   email: {type: String,
     required: true,
     unique: true,
@@ -22,14 +29,15 @@ const userSchema = new Schema({
   },
   name: { type: String, required: true },
   password: { type: String, required: true},
+  refreshToken: { type: RefreshTokenSchema }
 });
 
 
-userSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
   }
-  const user = this as IUserDoc;
+  const user = this as IUserSchema;
   if (user) {
     const hash = await user.generateHash(user.password);
     user.password = hash;
@@ -37,7 +45,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-userSchema.methods.comparePasswords = function(candidatePassword: string): Promise<boolean> {
+UserSchema.methods.comparePasswords = function(candidatePassword: string): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) =>{
     bcrypt.compare(candidatePassword, this.password)
       .then(isValid => resolve(isValid))
@@ -45,23 +53,24 @@ userSchema.methods.comparePasswords = function(candidatePassword: string): Promi
   });
 };
 
-userSchema.methods.generateHash = function(password: string): Promise<string> {
-  return bcrypt.hash(password, bcrypt.genSaltSync(COST));
+UserSchema.methods.generateHash = function(password: string): Promise<string> {
+  return bcrypt.hash(password, bcrypt.genSaltSync());
 };
 
-userSchema.methods.isPasswordValid = function(password: string): Promise<boolean> {
+UserSchema.methods.isPasswordValid = function(password: string): Promise<boolean> {
   return bcrypt.compare(password, this.password);
 };
 
 // Omit the password when returning a user and change _id to id
-userSchema.set('toJSON', {
+UserSchema.set('toJSON', {
+  versionKey: false,
   transform: (doc, ret) => {
     delete ret.password;
     ret.id = ret._id;
     delete ret._id;
-    delete ret.__v;
+    delete ret.refreshToken;
     return ret;
   }
 });
 
-export default mongoose.model<IUserDoc>('User', userSchema);
+export default mongoose.model<IUserSchema>('User', UserSchema);
