@@ -4,3 +4,5 @@ package-lock.json
 data
 dist
 cert
+.DS_Store
+Thumbs.db
