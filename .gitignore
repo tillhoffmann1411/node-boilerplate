@@ -6,3 +6,4 @@ dist
 cert
 .DS_Store
 Thumbs.db
+.dbdata
