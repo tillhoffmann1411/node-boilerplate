@@ -38,7 +38,7 @@ export class UserService {
 
   public static async delete(id: string): Promise<number> {
     try {
-      const response = await User.deleteOne({ _id: id }); // TODO remove this!!! Deletes all
+      const response = await User.deleteOne({ _id: id });
       return response.deletedCount;
       
     } catch (error) {

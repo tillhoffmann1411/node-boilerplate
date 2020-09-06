@@ -139,7 +139,7 @@ export class UserController {
    * @param res Response param - it returns the jwt token and the corresponding expiresIn value
    */
   public static async delete(req: Request, res: Response): Promise<void> {
-    const id = req.body._id;
+    const id = req.query.id as string;
     if (id) {
       try {
         const deletedCount = await UserService.delete(id);
