@@ -79,9 +79,11 @@ export class UserController {
     if (email && password) {
       try {
         const tokens = await UserService.signin(email, password, req.ip);
+        const user = await UserService.get(email);
         res.cookie('jwt', tokens.jwt.token, {httpOnly: true, signed: true});              // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({
           loggedIn: true,
+          user: user,
           expires: tokens.jwt.expires,
           refreshToken: tokens.refreshToken.token,
           refreshTokenexpires: tokens.refreshToken.expires,
