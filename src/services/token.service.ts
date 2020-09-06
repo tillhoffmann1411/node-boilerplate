@@ -12,7 +12,7 @@ export class TokenService {
     const token = jwt.sign(claimSet, process.env.JWT_KEY, {expiresIn: JWT_CONFIG.expiresIn});
     return {
       token: token,
-      expires: JWT_CONFIG.expiresIn
+      expires: Date.now() + 1000 * JWT_CONFIG.expiresIn
     };
   }
 

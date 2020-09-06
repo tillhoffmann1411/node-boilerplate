@@ -52,19 +52,19 @@ export class UserController {
         }, req.ip);
         res.cookie('jwt', userAndTokensObject.jwt.token, {httpOnly: true, signed: true});               // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({
-          success: true,
+          loggedIn: true,
           user: userAndTokensObject.user,
-          expiresIn: userAndTokensObject.jwt.expires,
+          expires: userAndTokensObject.jwt.expires,
           refreshToken: userAndTokensObject.refreshToken.token,
-          refreshTokenexpiresIn: userAndTokensObject.refreshToken.expires,
+          refreshTokenexpires: userAndTokensObject.refreshToken.expires,
         });
       } catch (err) {
         console.error('\x1b[31m', err);
-        res.status(500).send({success: false, msg: 'Error by sign you up'});
+        res.status(500).send({loggedIn: false, msg: 'Error by sign you up'});
       }
     } else {
       console.error('\x1b[31m', 'Incorrect request body:', req.body);
-      res.status(400).send({success: false, msg: 'Body was incorrect'});
+      res.status(400).send({loggedIn: false, msg: 'Body was incorrect'});
     }
   }
 
@@ -81,18 +81,18 @@ export class UserController {
         const tokens = await UserService.signin(email, password, req.ip);
         res.cookie('jwt', tokens.jwt.token, {httpOnly: true, signed: true});              // TODO add in options 'secure: true' - missing for testing with postman
         res.status(200).send({
-          success: true,
+          loggedIn: true,
           expires: tokens.jwt.expires,
           refreshToken: tokens.refreshToken.token,
           refreshTokenexpires: tokens.refreshToken.expires,
         });
       } catch (error) {
         console.error('\x1b[31m', error);
-        res.status(401).send({success:  false, msg: error});
+        res.status(401).send({loggedIn:  false, msg: error});
       }
     } else {
       console.error('\x1b[31m', 'Incorrect request body:', req.body);
-      res.status(400).send({success: false, msg: 'Body was incorrect'});
+      res.status(400).send({loggedIn: false, msg: 'Body was incorrect'});
     }
   }
 
