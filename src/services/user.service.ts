@@ -5,17 +5,13 @@ import { IJwtClaimSet, IJwtTokenObject, IRefreshToken } from '../interfaces/jwt'
 
 export class UserService {
   public static async signup(user: {name: string, email: string, password: string}, clientIp: string): Promise<{user: IUser, jwt: IJwtTokenObject, refreshToken: IRefreshToken}> {
-    try {
-      const createdUser = await User.create({
-        name: user.name,
-        email: user.email,
-        password: user.password,
-      });
-      const tokens = await UserService.signin(user.email, user.password, clientIp);
-      return {user: createdUser, ...tokens};
-    } catch (error) {
-      throw new Error('Error by creating User:' + error.toString());
-    }
+    const createdUser = await User.create({
+      name: user.name,
+      email: user.email,
+      password: user.password,
+    });
+    const tokens = await UserService.signin(user.email, user.password, clientIp);
+    return {user: createdUser, ...tokens};
   }
 
   public static async getById(id: string): Promise<IUserSchema> {

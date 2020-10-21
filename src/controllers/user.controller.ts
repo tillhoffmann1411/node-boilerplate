@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user.model';
 import { UserService } from '../services/user.service';
-import { typeOfUser, IUser } from '../interfaces/user.interface';
+import { IUser } from '../interfaces/user.interface';
 
 
 export class UserController {
@@ -60,7 +60,11 @@ export class UserController {
         });
       } catch (err) {
         console.error('\x1b[31m', err);
-        res.status(500).send({loggedIn: false, msg: 'Error by sign you up'});
+        if (err.code === 11000) {
+          res.status(400).send({loggedIn: false, msg: 'This email is already taken!'});
+        } else {
+          res.status(500).send({loggedIn: false, msg: 'Error by sign you up'});
+        }
       }
     } else {
       console.error('\x1b[31m', 'Incorrect request body:', req.body);
