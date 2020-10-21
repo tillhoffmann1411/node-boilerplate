@@ -34,15 +34,24 @@ const UserSchema = new Schema({
 
 
 UserSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) {
+  const user = this as IUserSchema;
+  if (!user.password || !user.isModified('password')) {
     return next();
   }
-  const user = this as IUserSchema;
   if (user) {
     const hash = await user.generateHash(user.password);
     user.password = hash;
     return next(null);
   }
+});
+
+UserSchema.pre('updateOne', async function (next) {
+  const user = this.getUpdate();
+  if(user.password) {
+    user.password = await bcrypt.hash(user.password, bcrypt.genSaltSync());
+    this.update({}, user).exec()
+  }
+  next()
 });
 
 UserSchema.methods.comparePasswords = function(candidatePassword: string): Promise<boolean> {

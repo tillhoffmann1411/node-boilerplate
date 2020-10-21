@@ -26,13 +26,12 @@ export class UserService {
     return await User.findOne(partUser);
   }
 
-  public static async update(user: Partial<IUserSchema>): Promise<{ok?: number, n?: number, deletedCount?: number}> {
+  public static async update(user: Partial<IUserSchema>): Promise<{ modified: number }> {
     try {
       const response = await User.updateOne({ _id: user._id }, user);
-      return response;
-      
+      return { modified: response.nModified };
     } catch (error) {
-      throw Error('Unexpected error during updating User');
+      throw Error('Unexpected error during updating User: ' + error);
     }
   }
 

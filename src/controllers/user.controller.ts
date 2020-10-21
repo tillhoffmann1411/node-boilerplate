@@ -113,19 +113,14 @@ export class UserController {
    * @param res Response param - it returns the updated user
    */
   public static async update(req: Request, res: Response): Promise<void> {
-    const user: IUser = {
-      _id: req.body._id,
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password
-    };
-    if (typeOfUser(user)) {
+    if (req.user._id) {
+      const update: Partial<IUser> = { ...req.user, ...req.body };
       try {
-        const result = await UserService.update(user);
+        const result = await UserService.update(update);
         res.status(200).send(result);
       } catch (error) {
         console.error('\x1b[31m', 'Error by updating User:', error)
-        res.status(500).send('Error by updating User');
+        res.status(500).send('Error by updating User. You can only update name, email and password.');
       }
     } else {
       console.error('\x1b[31m', 'Incorrect request body:', req.body);
@@ -139,7 +134,7 @@ export class UserController {
    * @param res Response param - it returns the jwt token and the corresponding expiresIn value
    */
   public static async delete(req: Request, res: Response): Promise<void> {
-    const id = req.query.id as string;
+    const id = req.body.id as string;
     if (id) {
       try {
         const deletedCount = await UserService.delete(id);
