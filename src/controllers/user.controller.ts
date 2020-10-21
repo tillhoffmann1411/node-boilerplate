@@ -134,7 +134,7 @@ export class UserController {
    * @param res Response param - it returns the jwt token and the corresponding expiresIn value
    */
   public static async delete(req: Request, res: Response): Promise<void> {
-    const id = req.body.id as string;
+    const id = req.user._id as string;
     if (id) {
       try {
         const deletedCount = await UserService.delete(id);
@@ -148,7 +148,7 @@ export class UserController {
         res.status(500).send({success: false, msg: error});
       }
     } else {
-      console.error('\x1b[31m', 'Incorrect request body:', req.body);
+      console.error('\x1b[31m', 'Incorrect request body:', req.user._id);
       res.status(400).send({ success: false, msg: 'Body was incorrect'});
     }
   }
