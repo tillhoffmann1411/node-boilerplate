@@ -118,13 +118,17 @@ export class UserController {
    */
   public static async update(req: Request, res: Response): Promise<void> {
     if (req.user._id) {
-      const update: Partial<IUser> = { ...req.user, ...req.body };
+      const user: Partial<IUser> = { ...req.user, ...req.body };
       try {
-        const result = await UserService.update(update);
+        const result = await UserService.update(user);
+        if (result.modified === 0) {
+          console.error('\x1b[31m', 'No User updated:', user)
+          res.status(400).send({ success: false, msg: 'No user updated. Did you change something? You can only update name, email and password.' });
+        }
         res.status(200).send({ success: true, ...result});
       } catch (error) {
         console.error('\x1b[31m', 'Error by updating User:', error)
-        res.status(500).send({ success: false, msg: 'Error by updating User. You can only update name, email and password.' });
+        res.status(400).send({ success: false, msg: 'Error by updating User. You can only update name, email and password.' });
       }
     } else {
       console.error('\x1b[31m', 'Incorrect request body:', req.body);

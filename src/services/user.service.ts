@@ -23,12 +23,8 @@ export class UserService {
   }
 
   public static async update(user: Partial<IUserSchema>): Promise<{ modified: number }> {
-    try {
-      const response = await User.updateOne({ _id: user._id }, user);
-      return { modified: response.nModified };
-    } catch (error) {
-      throw Error('Unexpected error during updating User: ' + error);
-    }
+    const response = await User.updateOne({ _id: user._id }, user);
+    return { modified: response.nModified };
   }
 
   public static async delete(id: string): Promise<number> {
