@@ -121,14 +121,14 @@ export class UserController {
       const update: Partial<IUser> = { ...req.user, ...req.body };
       try {
         const result = await UserService.update(update);
-        res.status(200).send(result);
+        res.status(200).send({ success: true, ...result});
       } catch (error) {
         console.error('\x1b[31m', 'Error by updating User:', error)
-        res.status(500).send('Error by updating User. You can only update name, email and password.');
+        res.status(500).send({ success: false, msg: 'Error by updating User. You can only update name, email and password.' });
       }
     } else {
       console.error('\x1b[31m', 'Incorrect request body:', req.body);
-      res.status(400).send('Body was incorrect');
+      res.status(400).send({ success: false, msg: 'Body was incorrect'});
     }
   }
 
